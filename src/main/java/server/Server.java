@@ -1,10 +1,7 @@
 package server;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -82,10 +79,6 @@ public class Server {
         EventLoopGroup workerGroup = new NioEventLoopGroup(this.countOfThreads);
 
         ServerBootstrap b = new ServerBootstrap();
-        final EventExecutorGroup groupServerHandler = new DefaultEventExecutorGroup(this.countOfThreads);
-        final EventExecutorGroup groupStringDecoder = new DefaultEventExecutorGroup(this.countOfThreads);
-        final EventExecutorGroup groupHttpParser = new DefaultEventExecutorGroup(this.countOfThreads);
-
         b.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel.class)
                 .handler(new LoggingHandler(LogLevel.INFO))
@@ -93,14 +86,9 @@ public class Server {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(groupStringDecoder, "stringDecoder", new StringDecoder());
-                        pipeline.addLast(groupHttpParser, "httpParser", new HttpParserHandler());
-
-                        // ===========================================================
-                        // 2. run handler with slow business logic
-                        // in separate thread from I/O thread
-                        // ===========================================================
-                        pipeline.addLast(groupServerHandler, "serverHandler", new ServerHandler());
+                        pipeline.addLast("stringDecoder", new StringDecoder());
+                        pipeline.addLast("httpParser", new HttpParserHandler());
+                        pipeline.addLast("serverHandler", new ServerHandler());
                     }
                 });
 
@@ -114,7 +102,7 @@ public class Server {
         try {
             b.bind(port).sync();
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
+//             TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

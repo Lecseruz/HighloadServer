@@ -1,13 +1,10 @@
 application/Application.class
 server/util/HttpResponse.class
-server/handler/ServerHandler.class
 server/Server.class
 server/util/HttpRequest$HttpRequestBuilder.class
-application/util/ParseCmd.class
 server/cache/ServerMemoryCache.class
 server/util/HttpHeaders$HttpHeadersBuilder.class
 server/Server$ServerConfig.class
-server/handler/ServerHandler$1.class
 server/util/HttpResponse$ResponceCode.class
 server/util/HttpHeaders.class
 models/PairNameValue.class
